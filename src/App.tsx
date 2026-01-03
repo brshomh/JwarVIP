@@ -1,57 +1,37 @@
-import React, { useEffect, useState } from 'react';
-import './App.css';
+import React, { useRef, useState, useEffect } from 'react';
+
+const API_KEY = "AIzaSyCT_v_qXMZcezQholeLo1jP6kiOifgrunA"; 
 
 function App() {
-  // هذه الوظيفة ترسل رسالة إلى FlutterFlow عند فتح الكاميرا أو حدوث حدث
-  const sendMessageToFlutterFlow = (data: any) => {
-    if ((window as any).ReactNativeWebView) {
-      (window as any).ReactNativeWebView.postMessage(JSON.stringify(data));
-    }
-  };
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [result, setResult] = useState("جاري تشغيل الكاميرا...");
 
   useEffect(() => {
-    sendMessageToFlutterFlow({ status: 'webview_ready', message: 'مرحباً بك في جوهر برو' });
+    async function setupCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        if (videoRef.current) videoRef.current.srcObject = stream;
+        setResult("المساعد جاهز، اضغط لتحليل ما تراه العين");
+      } catch (err) {
+        setResult("خطأ: يرجى تفعيل صلاحية الكاميرا في إعدادات التطبيق");
+      }
+    }
+    setupCamera();
   }, []);
 
-  return (
-    <div style={{ 
-      height: '100vh', 
-      display: 'flex', 
-      flexDirection: 'column', 
-      alignItems: 'center', 
-      justifyContent: 'center',
-      backgroundColor: '#000',
-      color: '#fff',
-      fontFamily: 'Arial'
-    }}>
-      <h1 style={{ color: '#9d4edd' }}>Jawr Pro</h1>
-      <p>المساعد الذكي جاهز للعمل</p>
-      
-      {/* هنا سيظهر فيديو الكاميرا لاحقاً */}
-      <div style={{
-        width: '90%',
-        height: '60%',
-        border: '2px dashed #9d4edd',
-        borderRadius: '20px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        <p>جاري الاتصال بالكاميرا...</p>
-      </div>
+  const captureAndAnalyze = async () => {
+    setResult("جاري التحليل... انتظر لحظة");
+    // هنا سيتم إضافة منطق إرسال الصورة لـ Gemini لاحقاً
+    setResult("تم التقاط الصورة! (سيتم تفعيل الرد الصوتي في الخطوة القادمة)");
+  };
 
-      <button 
-        onClick={() => sendMessageToFlutterFlow({ action: 'start_ai' })}
-        style={{
-          marginTop: '20px',
-          padding: '15px 30px',
-          borderRadius: '30px',
-          border: 'none',
-          backgroundColor: '#9d4edd',
-          color: 'white',
-          fontWeight: 'bold'
-        }}>
-        ابدأ التحليل الآن
+  return (
+    <div style={{ backgroundColor: '#000', height: '100vh', color: '#fff', textAlign: 'center', padding: '20px' }}>
+      <h2 style={{ color: '#9d4edd' }}>Jawr Pro AI</h2>
+      <video ref={videoRef} autoPlay playsInline style={{ width: '100%', borderRadius: '15px', border: '2px solid #9d4edd' }} />
+      <div style={{ margin: '20px', padding: '15px', background: '#1a1a1a', borderRadius: '10px' }}>{result}</div>
+      <button onClick={captureAndAnalyze} style={{ padding: '15px 30px', borderRadius: '50px', backgroundColor: '#9d4edd', color: '#fff', border: 'none', fontSize: '18px' }}>
+        تحليل الآن 👁️
       </button>
     </div>
   );
