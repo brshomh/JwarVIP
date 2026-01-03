@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';  // أزلنا React من الاستيراد
 import './App.css';
 
 function App() {
@@ -8,7 +8,7 @@ function App() {
     <div className="App">
       <h1>✅ Vite + React على Vercel</h1>
       <p>تم حل المشكلة بنجاح!</p>
-      <button onClick={() => setCount((count) => count + 1)}>
+      <button onClick={() => setCount(count + 1)}>
         count is {count}
       </button>
     </div>
