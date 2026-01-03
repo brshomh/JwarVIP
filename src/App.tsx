@@ -1,13 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Jawr Pro</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/index.tsx"></script>
-  </body>
-</html>
+import React, { useState } from 'react';
+import './App.css';
+
+function App() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div className="App">
+      <h1>✅ Vite + React على Vercel</h1>
+      <p>تم حل المشكلة بنجاح!</p>
+      <button onClick={() => setCount((count) => count + 1)}>
+        count is {count}
+      </button>
+    </div>
+  );
+}
+
+export default App;
