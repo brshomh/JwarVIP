@@ -3,22 +3,16 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  // هذه الإعدادات ضرورية لـ Vercel
-  base: './',
+  base: '/',
   build: {
     outDir: 'dist',
     rollupOptions: {
-      input: {
-        main: './index.html'
-      },
-      // هذا يحل مشكلة الخطأ external
+      input: './index.html',
+      // أضف هذا لمنع الخطأ
       external: []
     }
   },
-  // هذا يحل مشكلة استيراد المسارات
   resolve: {
-    alias: {
-      '@': '/src'
-    }
+    extensions: ['.js', '.jsx', '.ts', '.tsx']
   }
 })
