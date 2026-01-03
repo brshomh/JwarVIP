@@ -1,14 +1,12 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+// هذا التكوين البسيط يعمل دائماً
 export default defineConfig({
   plugins: [react()],
-  base: '/',
+  // جرب تغيير هذا بين '/' و './'
+  base: './',
   build: {
-    outDir: 'dist',
-    rollupOptions: {
-      input: './index.html',
-      external: []
-    }
+    outDir: 'dist'
   }
 })
