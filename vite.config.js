@@ -8,11 +8,7 @@ export default defineConfig({
     outDir: 'dist',
     rollupOptions: {
       input: './index.html',
-      // أضف هذا لمنع الخطأ
       external: []
     }
-  },
-  resolve: {
-    extensions: ['.js', '.jsx', '.ts', '.tsx']
   }
 })
