@@ -1,0 +1,9 @@
+{
+  "name": "Jawr Pro",
+  "description": "تواصل فيديو ذكي مدعوم بتقنيات Gemini AI للجيل القادم.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
