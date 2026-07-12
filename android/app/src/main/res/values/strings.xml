@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Jawr Pro</string>
+    <string name="title_activity_main">Jawr Pro</string>
+    <string name="package_name">com.jawr.pro</string>
+    <string name="custom_url_scheme">com.jawr.pro</string>
+</resources>

@@ -1,0 +1,15 @@
+
+{
+  "appId": "com.jawr.pro",
+  "appName": "Jawr Pro",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https",
+    "iosScheme": "jawr"
+  },
+  "ios": {
+    "contentInset": "always",
+    "preferredContentMode": "mobile",
+    "backgroundColor": "#000000"
+  }
+}
