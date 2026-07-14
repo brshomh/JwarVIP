@@ -49,6 +49,7 @@ export class WebRTCManager {
   private nextStartTime: number = 0;
   private audioSources = new Set<AudioBufferSourceNode>();
   private frameInterval: number | null = null;
+  private currentAiResponse: string = "";
 
   constructor(callbacks: LiveSessionCallbacks) {
     this.callbacks = callbacks;
@@ -88,8 +89,46 @@ export class WebRTCManager {
             this.audioSources.add(source);
             source.onended = () => this.audioSources.delete(source);
           }
+          
+          // Handle user speech transcription
+          const inputTranscript = message.serverContent?.inputTranscription?.text;
+          if (inputTranscript) {
+            this.callbacks.onMessage({
+              id: 'user-' + Date.now() + '-' + Math.random(),
+              sender: 'user',
+              text: inputTranscript,
+              timestamp: Date.now()
+            });
+          }
+
+          // Handle AI response transcription chunks
+          const outputTranscript = message.serverContent?.outputTranscription?.text;
+          if (outputTranscript) {
+            this.currentAiResponse += outputTranscript;
+          }
+
+          // Finalize AI response message when turn is complete
+          if (message.serverContent?.turnComplete && this.currentAiResponse) {
+            this.callbacks.onMessage({
+              id: 'ai-' + Date.now() + '-' + Math.random(),
+              sender: 'ai',
+              text: this.currentAiResponse,
+              timestamp: Date.now()
+            });
+            this.currentAiResponse = "";
+          }
+
           if (message.serverContent?.interrupted) {
             this.stopAllAiAudio();
+            if (this.currentAiResponse) {
+              this.callbacks.onMessage({
+                id: 'ai-interrupted-' + Date.now() + '-' + Math.random(),
+                sender: 'ai',
+                text: this.currentAiResponse + "...",
+                timestamp: Date.now()
+              });
+              this.currentAiResponse = "";
+            }
           }
         },
         onerror: (e) => this.callbacks.onError(new Error("AI Connection Error")),
@@ -100,7 +139,9 @@ export class WebRTCManager {
         speechConfig: {
           voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Zephyr' } }
         },
-        systemInstruction: 'ط£ظ†طھ Jawr AIطŒ ظ…ط³ط§ط¹ط¯ ظپظٹط¯ظٹظˆ ط°ظƒظٹ. طھط­ط¯ط« ط¨ظ„ظ‡ط¬ط© ط¹ط±ط¨ظٹط© ط¨ظٹط¶ط§ط، ظ…ظپظ‡ظˆظ…ط©طŒ ظƒظ† ط³ط±ظٹط¹ ط§ظ„ط¨ط¯ظٹظ‡ط©طŒ ظˆط§ط³طھط®ط¯ظ… ط§ظ„ظ…ط¹ظ„ظˆظ…ط§طھ ط§ظ„ط¨طµط±ظٹط© ط§ظ„طھظٹ طھط±ط§ظ‡ط§ ظپظٹ ط§ظ„ظپظٹط¯ظٹظˆ ظ„طھط¹ظ„ظٹظ‚ ط°ظƒظٹ.'
+        systemInstruction: 'أنت Jawr AI، مساعد فيديو ذكي. تحدث بلهجة عربية بيضاء مفهومة، كن سريع البديهة، واستخدم المعلومات البصرية التي تراها في الفيديو لتعليق ذكي.',
+        inputAudioTranscription: {},
+        outputAudioTranscription: {}
       }
     });
   }

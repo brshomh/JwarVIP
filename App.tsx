@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ConnectionStatus } from './types';
+import { ConnectionStatus, ChatMessage } from './types';
 import { WebRTCManager } from './services/geminiLive'; 
 import { AuthService, UserProfile } from './services/auth';
 import { sounds } from './services/sound';
@@ -26,13 +26,28 @@ const App: React.FC = () => {
   const streamRef = useRef<MediaStream | null>(null);
   const rtcManager = useRef<WebRTCManager | null>(null);
 
-  // Mock chats data
-  const [chats, setChats] = useState([
-    { id: '1', sender: 'user', text: 'مرحباً، هل يمكنك رؤيتي؟', timestamp: Date.now() - 3600000 },
-    { id: '2', sender: 'ai', text: 'أهلاً بك! نعم، الكاميرا تعمل وأستطيع رؤية محيطك الآن. كيف يمكنني مساعدتك اليوم؟', timestamp: Date.now() - 3590000 },
-    { id: '3', sender: 'user', text: 'أريد تحليل هذا الكتاب الذي أمامي.', timestamp: Date.now() - 1800000 },
-    { id: '4', sender: 'ai', text: 'بالتأكيد! يظهر لي كتاب بعنوان "الذكاء الاصطناعي ومستقبل البشرية". إنه يتحدث عن التطور المتسارع للتقنيات وكيف يمكنها تحسين جودة حياتنا اليومية.', timestamp: Date.now() - 1790000 }
-  ]);
+  // Mock chats data with local persistence
+  const [chats, setChats] = useState<ChatMessage[]>(() => {
+    const saved = localStorage.getItem('jawr_chats_history');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error("Error reading chats history", e);
+      }
+    }
+    return [
+      { id: '1', sender: 'user', text: 'مرحباً، هل يمكنك رؤيتي؟', timestamp: Date.now() - 3600000 },
+      { id: '2', sender: 'ai', text: 'أهلاً بك! نعم، الكاميرا تعمل وأستطيع رؤية محيطك الآن. كيف يمكنني مساعدتك اليوم؟', timestamp: Date.now() - 3590000 },
+      { id: '3', sender: 'user', text: 'أريد تحليل هذا الكتاب الذي أمامي.', timestamp: Date.now() - 1800000 },
+      { id: '4', sender: 'ai', text: 'بالتأكيد! يظهر لي كتاب بعنوان "الذكاء الاصطناعي ومستقبل البشرية". إنه يتحدث عن التطور المتسارع للتقنيات وكيف يمكنها تحسين جودة حياتنا اليومية.', timestamp: Date.now() - 1790000 }
+    ];
+  });
+
+  // Save chats to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('jawr_chats_history', JSON.stringify(chats));
+  }, [chats]);
 
   // --- FlutterFlow Bridge ---
   useEffect(() => {
@@ -114,13 +129,8 @@ const App: React.FC = () => {
         sendToFlutter({ event: 'ERROR', message: 'Gemini connection failed' });
       },
       onAudioLevel: () => {},
-      onMessage: (msg: any) => {
-        setChats(prev => [...prev, {
-          id: Date.now().toString(),
-          sender: msg.sender,
-          text: msg.text,
-          timestamp: Date.now()
-        }]);
+      onMessage: (msg: ChatMessage) => {
+        setChats(prev => [...prev, msg]);
       }
     });
 
@@ -242,16 +252,36 @@ const App: React.FC = () => {
 
               {activeTab === 'chats' && (
                 <div className="h-full flex flex-col justify-start">
-                  <h3 className="text-lg font-black mb-4 border-b border-white/5 pb-2 text-zinc-400 font-tajawal">سجل المحادثات</h3>
+                  <div className="flex justify-between items-center mb-4 border-b border-white/5 pb-2">
+                    <h3 className="text-lg font-black text-zinc-400 font-tajawal">سجل المحادثات</h3>
+                    {chats.length > 0 && (
+                      <button 
+                        onClick={() => {
+                          if (confirm('هل أنت متأكد من حذف سجل المحادثات؟')) {
+                            setChats([]);
+                          }
+                        }}
+                        className="text-xs text-red-500 hover:text-red-400 font-bold font-tajawal active:scale-95 transition-transform"
+                      >
+                        مسح السجل
+                      </button>
+                    )}
+                  </div>
                   <div className="flex-1 overflow-y-auto space-y-4 pr-1">
-                    {chats.map(chat => (
-                      <div key={chat.id} className={`flex flex-col ${chat.sender === 'user' ? 'items-start' : 'items-end'}`}>
-                        <div className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm font-tajawal ${chat.sender === 'user' ? 'bg-zinc-800 text-zinc-100 rounded-tr-none' : 'bg-blue-600/20 border border-blue-500/20 text-blue-200 rounded-tl-none'}`}>
-                          <p className="leading-relaxed">{chat.text}</p>
-                        </div>
-                        <span className="text-[9px] text-zinc-600 mt-1 px-1">{new Date(chat.timestamp).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}</span>
+                    {chats.length === 0 ? (
+                      <div className="h-full flex flex-col items-center justify-center text-zinc-500 font-tajawal py-10">
+                        <p>لا يوجد سجل محادثات حالياً</p>
                       </div>
-                    ))}
+                    ) : (
+                      chats.map(chat => (
+                        <div key={chat.id} className={`flex flex-col ${chat.sender === 'user' ? 'items-start' : 'items-end'}`}>
+                          <div className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm font-tajawal ${chat.sender === 'user' ? 'bg-zinc-800 text-zinc-100 rounded-tr-none' : 'bg-blue-600/20 border border-blue-500/20 text-blue-200 rounded-tl-none'}`}>
+                            <p className="leading-relaxed">{chat.text}</p>
+                          </div>
+                          <span className="text-[9px] text-zinc-600 mt-1 px-1">{new Date(chat.timestamp).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}</span>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
               )}
