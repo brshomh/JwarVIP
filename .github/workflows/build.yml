@@ -176,3 +176,5 @@ jobs:
                        --file ios/App/build/App.ipa \
                        --apiKey "${{ secrets.APP_STORE_CONNECT_KEY_ID }}" \
                        --apiIssuer "${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}"
+
+# Trigger rebuild 2
