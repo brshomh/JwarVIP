@@ -107,7 +107,7 @@ jobs:
         run: |
           CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
-          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+          echo "$BUILD_CERTIFICATE_BASE64" | base64 --decode > $CERTIFICATE_PATH
           security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
           security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
@@ -121,7 +121,7 @@ jobs:
         run: |
           PP_FOLDER=~/Library/MobileDevice/Provisioning\ Profiles
           mkdir -p "$PP_FOLDER"
-          echo -n "$PROVISIONING_PROFILE_BASE64" | base64 --decode -o "$PP_FOLDER/profile.mobileprovision"
+          echo "$PROVISIONING_PROFILE_BASE64" | base64 --decode > "$PP_FOLDER/profile.mobileprovision"
 
       - name: Build Xcode Archive (Device)
         if: ${{ env.HAS_IOS_SECRETS == 'true' }}
