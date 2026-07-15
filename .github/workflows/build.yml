@@ -114,9 +114,14 @@ jobs:
           security default-keychain -s $KEYCHAIN_PATH
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
 
-          # Debug base64 input length and decode cleanly
+          # Debug base64 input length and decode cleanly with self-healing padding
           echo "Base64 string length: ${#BUILD_CERTIFICATE_BASE64}"
-          printf "%s" "$BUILD_CERTIFICATE_BASE64" | base64 --decode > $CERTIFICATE_PATH
+          PADDED_CERT=$BUILD_CERTIFICATE_BASE64
+          while [ $((${#PADDED_CERT} % 4)) -ne 0 ]; do
+            PADDED_CERT="${PADDED_CERT}="
+          done
+          echo "Padded Base64 string length: ${#PADDED_CERT}"
+          printf "%s" "$PADDED_CERT" | base64 --decode > $CERTIFICATE_PATH
           
           # Debug decoded file
           echo "Decoded file details:"
