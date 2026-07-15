@@ -107,16 +107,26 @@ jobs:
         run: |
           CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
-          # Debug base64 input length
+
+          # create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security default-keychain -s $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # Debug base64 input length and decode cleanly
           echo "Base64 string length: ${#BUILD_CERTIFICATE_BASE64}"
-          # Decode using printf to avoid trailing newline issues
           printf "%s" "$BUILD_CERTIFICATE_BASE64" | base64 --decode > $CERTIFICATE_PATH
+          
           # Debug decoded file
           echo "Decoded file details:"
           ls -la $CERTIFICATE_PATH
           file $CERTIFICATE_PATH
-          # Check first few bytes (hex)
           od -t x1 -N 10 $CERTIFICATE_PATH
+
+          # import certificate to keychain
+          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
           security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
           security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
