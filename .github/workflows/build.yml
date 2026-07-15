@@ -90,6 +90,10 @@ jobs:
       - name: Build Web App
         run: npm run build
 
+      - name: Update Capacitor config appId
+        run: |
+          python3 -c "import json; f=open('capacitor.config.json','r'); d=json.load(f); d['appId']='com.jawr.app'; open('capacitor.config.json','w').write(json.dumps(d,indent=2))"
+
       - name: Sync Capacitor
         run: npx cap sync ios
 
@@ -165,6 +169,7 @@ jobs:
                      -configuration Release \
                      -archivePath $RUNNER_TEMP/App.xcarchive \
                      DEVELOPMENT_TEAM=ABP3HWFZQR \
+                     PRODUCT_BUNDLE_IDENTIFIER=com.jawr.app \
                      CODE_SIGN_STYLE=Manual \
                      CODE_SIGN_IDENTITY="Apple Distribution" \
                      PROVISIONING_PROFILE_SPECIFIER="6b987d53-53ba-4fc7-af8b-9663e5b2cbdf" \
