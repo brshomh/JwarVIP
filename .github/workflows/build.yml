@@ -168,11 +168,6 @@ jobs:
                      -sdk iphoneos \
                      -configuration Release \
                      -archivePath $RUNNER_TEMP/App.xcarchive \
-                     DEVELOPMENT_TEAM=ABP3HWFZQR \
-                     PRODUCT_BUNDLE_IDENTIFIER=com.jawr.app \
-                     CODE_SIGN_STYLE=Manual \
-                     CODE_SIGN_IDENTITY="Apple Distribution" \
-                     PROVISIONING_PROFILE_SPECIFIER="6b987d53-53ba-4fc7-af8b-9663e5b2cbdf" \
                      archive
 
       - name: Build Xcode Archive (Simulator fallback)
