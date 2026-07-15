@@ -154,7 +154,7 @@ jobs:
         run: |
           PP_FOLDER=~/Library/MobileDevice/Provisioning\ Profiles
           mkdir -p "$PP_FOLDER"
-          echo "$PROVISIONING_PROFILE_BASE64" | base64 --decode > "$PP_FOLDER/profile.mobileprovision"
+          echo "$PROVISIONING_PROFILE_BASE64" | base64 --decode > "$PP_FOLDER/6b987d53-53ba-4fc7-af8b-9663e5b2cbdf.mobileprovision"
 
       - name: Build Xcode Archive (Device)
         if: ${{ env.HAS_IOS_SECRETS == 'true' }}
@@ -164,6 +164,10 @@ jobs:
                      -sdk iphoneos \
                      -configuration Release \
                      -archivePath $RUNNER_TEMP/App.xcarchive \
+                     DEVELOPMENT_TEAM=ABP3HWFZQR \
+                     CODE_SIGN_STYLE=Manual \
+                     CODE_SIGN_IDENTITY="Apple Distribution" \
+                     PROVISIONING_PROFILE_SPECIFIER="6b987d53-53ba-4fc7-af8b-9663e5b2cbdf" \
                      archive
 
       - name: Build Xcode Archive (Simulator fallback)
