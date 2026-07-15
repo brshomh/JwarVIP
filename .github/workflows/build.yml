@@ -106,7 +106,7 @@ jobs:
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD || 'temporary_keychain_password' }}
         run: |
           CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
-          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing-${{ github.run_id }}-${{ github.run_attempt }}.keychain-db
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing-${{ github.run_id }}-${{ github.run_attempt }}.keychain
 
           # delete keychain if it already exists from previous runs/steps
           security delete-keychain $KEYCHAIN_PATH 2>/dev/null || true
