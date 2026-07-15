@@ -127,7 +127,10 @@ jobs:
           echo "Decoded file details:"
           ls -la $CERTIFICATE_PATH
           file $CERTIFICATE_PATH
+          echo "First 10 bytes:"
           od -t x1 -N 10 $CERTIFICATE_PATH
+          echo "Last 20 bytes:"
+          tail -c 20 $CERTIFICATE_PATH | od -t x1
 
           # import certificate to keychain
           security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
