@@ -72,7 +72,7 @@ jobs:
           serviceAccountJson: ${{ secrets.PLAY_STORE_JSON_KEY }}
           packageName: com.jawr.pro
           releaseFiles: ${{ steps.sign_app.outputs.signedReleaseFile }}
-          track: internal
+          track: production
 
   build-ios:
     name: Build iOS Archive (.ipa)
