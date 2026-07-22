@@ -1,15 +1,15 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
 	<key>NSCameraUsageDescription</key>
-	<string>يحتاج تطبيق جوار برو للوصول إلى الكاميرا لكي يتمكن مساعد الذكاء الاصطناعي من تحليل ما تراه وعرض مكالمات الفيديو.</string>
+	<string>Jawr Pro needs camera access so the AI assistant can see and analyze your surroundings during video calls. Camera data is processed in real-time and is not stored on our servers.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>يحتاج تطبيق جوار برو للوصول إلى الميكروفون لكي تتمكن من التحدث مع مساعد الذكاء الاصطناعي وإجراء المكالمات الصوتية.</string>
+	<string>Jawr Pro needs microphone access so you can speak with the AI assistant during voice and video calls. Audio is processed in real-time and is not stored on our servers.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-        <string>Jawr Pro</string>
+	<string>Jawr Pro</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -49,6 +49,9 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSPrivacyTracking</key>
+	<false/>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 </dict>
 </plist>
-

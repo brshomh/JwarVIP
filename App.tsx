@@ -151,23 +151,25 @@ const App: React.FC = () => {
     setTimeout(() => setApiKeySaved(false), 2000);
   };
 
+  // Auto-login if no user exists (for seamless first-time experience)
+  useEffect(() => {
+    if (!currentUser) {
+      const autoLogin = async () => {
+        const res = await AuthService.register({ email: `user_${Date.now()}@jawr.com`, password: '1', name: 'مستخدم جوار', age: 25, gender: 'male' });
+        if (res.success) {
+          setCurrentUser(res.user!);
+          sendToFlutter({ event: 'LOGIN_SUCCESS', user: res.user });
+        }
+      };
+      autoLogin();
+    }
+  }, [currentUser]);
+
   if (!currentUser) return (
     <div className="h-full bg-black flex flex-col items-center justify-center p-10 safe-top safe-bottom">
       <JawrLogo className="w-40 h-40 animate-pulse-slow" />
       <h1 className="text-4xl font-black text-white mt-8 tracking-tighter">JAWR PRO</h1>
-      <p className="text-zinc-500 mt-2 text-center font-medium font-tajawal">الجيل القادم من التواصل المرئي الذكي</p>
-      <button 
-        onClick={async () => {
-          const res = await AuthService.register({ email: `ff_${Date.now()}@jawr.com`, password: '1', name: 'مستخدم جوار', age: 25, gender: 'male' });
-          if (res.success) {
-            setCurrentUser(res.user!);
-            sendToFlutter({ event: 'LOGIN_SUCCESS', user: res.user });
-          }
-        }}
-        className="mt-20 w-full py-5 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold rounded-3xl text-xl flex items-center justify-center gap-3 active:scale-95 transition-all shadow-2xl shadow-blue-500/20"
-      >
-        دخول سريع <ArrowRightIcon className="w-6 h-6" />
-      </button>
+      <p className="text-zinc-500 mt-2 text-center font-medium font-tajawal">جاري التحميل...</p>
     </div>
   );
 
