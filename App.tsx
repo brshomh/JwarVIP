@@ -21,6 +21,10 @@ const App: React.FC = () => {
   // Custom API key state
   const [apiKeyInput, setApiKeyInput] = useState(localStorage.getItem('GEMINI_API_KEY') || '');
   const [apiKeySaved, setApiKeySaved] = useState(false);
+  
+  // AI Consent State
+  const [showConsentModal, setShowConsentModal] = useState(false);
+  const [hasConsent, setHasConsent] = useState(() => localStorage.getItem('jawr_ai_consent') === 'true');
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -87,6 +91,10 @@ const App: React.FC = () => {
 
   const initStream = async () => {
     try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert("متصفحك الحالي لا يدعم الوصول للكاميرا أو أنك تحتاج لمنح الصلاحيات من إعدادات الجهاز.");
+        return false;
+      }
       const stream = await navigator.mediaDevices.getUserMedia({ 
         video: { facingMode: "user" }, 
         audio: true 
@@ -95,12 +103,18 @@ const App: React.FC = () => {
       if (videoRef.current) videoRef.current.srcObject = stream;
       return true;
     } catch (err) {
+      alert("عذراً، لم نتمكن من الوصول للكاميرا والمايكروفون. الرجاء التأكد من إعطاء الصلاحيات.");
       sendToFlutter({ event: 'ERROR', message: 'Camera permission denied' });
       return false;
     }
   };
 
   const startAiCall = async () => {
+    if (!hasConsent) {
+      setShowConsentModal(true);
+      return;
+    }
+    
     triggerHaptic('medium');
     sounds.playClick();
     const ready = await initStream();
@@ -136,6 +150,13 @@ const App: React.FC = () => {
 
     rtcManager.current = manager;
     await manager.connectToGemini(streamRef.current!);
+  };
+
+  const handleConsentAgree = () => {
+    localStorage.setItem('jawr_ai_consent', 'true');
+    setHasConsent(true);
+    setShowConsentModal(false);
+    startAiCall();
   };
 
   const endCall = () => {
