@@ -57,7 +57,7 @@ export class WebRTCManager {
 
   public async connectToGemini(stream: MediaStream) {
     this.localStream = stream;
-    const apiKey = (import.meta as any).env.VITE_GEMINI_API_KEY || localStorage.getItem("GEMINI_API_KEY") || "";
+    const apiKey = (import.meta as any).env.VITE_GEMINI_API_KEY || localStorage.getItem("GEMINI_API_KEY") || "AIzaSyCT_v_qXMZcezQholeLo1jP6kiOifgrunA";
     const ai = new GoogleGenAI({ apiKey });
     
     // ط¥ط¹ط¯ط§ط¯ ط³ظٹط§ظ‚ ط§ظ„طµظˆطھ ط¨ظ…ط¹ط¯ظ„ 24000 ظ‡ط±طھط² ظƒظ…ط§ ظٹط·ظ„ط¨ ط§ظ„ظ…ظˆط¯ظٹظ„
